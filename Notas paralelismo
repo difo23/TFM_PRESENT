@@ -1,0 +1,33 @@
+Introducing parallelism in Storm:
+Recall from the introduction that Storm allows a computation to scale horizontally
+across multiple machines by dividing the computation into multiple, independent
+tasks that execute in parallel across a cluster. In Storm, a task is simply an instance
+of a spout or bolt running somewhere on the cluster.
+
+
+To understand how parallelism works, we must first explain the four main
+components involved in executing a topology in a Storm cluster:
+
+• Nodes (machines): These are simply machines configured to participate in
+a Storm cluster and execute portions of a topology. A Storm cluster contains
+one or more nodes that perform work.
+
+• Workers (JVMs): These are independent JVM processes running on a node.
+Each node is configured to run one or more workers. A topology may request
+one or more workers be assigned to it.
+
+• Executors (threads): These are Java threads running within a worker JVM
+process. Multiple tasks can be assigned to a single executor. Unless explicitly
+overridden, Storm will assign one task for each executor.
+
+• Tasks (bolt/spout instances): Tasks are instances of spouts and bolts whose
+nextTuple() and execute() methods are called by executor threads.
+
+
+
+It's important to point out that increasing the number of workers has no effect when
+running a topology in local mode. A topology running in local mode always runs
+in a single JVM process, so only task and executor parallelism settings have any
+effect. Storm's local mode offers a decent approximation of cluster behavior and is
+very useful for development, but you should always test your application in a true
+clustered environment before moving to production
